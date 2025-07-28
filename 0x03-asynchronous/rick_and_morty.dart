@@ -1,25 +1,17 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
-Future<void> printRmCharacters() async {
+printRmCharacters() async {
+  var data, parsed_url;
   try {
-    final response =
-        await http.get(Uri.parse('https://rickandmortyapi.com/api/character'));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      if (data['results'] is List) {
-        for (var character in data['results']) {
-          print('${character['name']}');
-        }
-      } else {
-        print('Invalid API response format.');
-      }
-    } else {
-      print('Failed to fetch data. Status code: ${response.statusCode}');
+    parsed_url = Uri.parse("https://rickandmortyapi.com/api/character?page=1");
+    data = await http.get(parsed_url);
+    data = jsonDecode(data.body)["results"];
+    for (var characterInfo in data) {
+      print(characterInfo["name"]);
     }
-  } catch (error) {
-    print('Error caught: $error');
+  } catch (e) {
+    return ("error caught: $e");
   }
 }
