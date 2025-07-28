@@ -1,31 +1,19 @@
-import 'dart:convert';
 import '4-util.dart';
+import 'dart:convert';
 
-Future<double> calculateTotal() async {
+Future<num> calculateTotal() async {
   try {
-    // Step 1: Get the user's data and extract their ID.
-    String userDataString = await fetchUserData();
-    Map<String, dynamic> userData = jsonDecode(userDataString);
+    Map userData = jsonDecode(await fetchUserData());
     String userId = userData['id'];
 
-    // Step 2: Use the ID to get the user's list of orders.
-    String userOrderString = await fetchUserOrders(userId);
-    List<dynamic> userOrders = jsonDecode(userOrderString);
+    List<dynamic> userOrder = jsonDecode(await fetchUserOrders(userId));
 
-    // Step 3: Loop through the orders to fetch each price and sum them up.
-    var totalPrice = 0.0;
-    for (var product in userOrders) {
-      // For each product, wait for its price
-      String productPriceString = await fetchProductPrice(product);
-      // The price is also a JSON string, so it needs to be decoded
-      double productPrice = double.parse(productPriceString);
-      totalPrice += productPrice;
+    double total = 0.0;
+    for (var product in userOrder) {
+      total += double.parse(await fetchProductPrice(product));
     }
-
-    // Step 4: Return the final calculated total
-    return totalPrice;
+    return total;
   } catch (error) {
-    // Step 5: If any 'await' call fails, the catch block is executed.
     return -1;
   }
 }
